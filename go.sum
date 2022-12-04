@@ -6,6 +6,8 @@ github.com/rronan/gonetdicom v0.0.0-20221203101004-16ef3c270d62 h1:XsJhWlTt0mbP8
 github.com/rronan/gonetdicom v0.0.0-20221203101004-16ef3c270d62/go.mod h1:76yjeL68PTFRjeazOQuKgFBzCaxbvi0uQaHEIeP2k3A=
 github.com/rronan/gonetdicom v0.0.0-20221203110411-773aa1761e2c h1:YtXJpaDHNhwM/mIpXLSj6kgxwTrLjdYRSgox73b2iMg=
 github.com/rronan/gonetdicom v0.0.0-20221203110411-773aa1761e2c/go.mod h1:76yjeL68PTFRjeazOQuKgFBzCaxbvi0uQaHEIeP2k3A=
+github.com/rronan/gonetdicom v0.0.0-20221204000845-7d5ac8d0a869 h1:tH3IPOxRBlMvNWeoa8qXUbNBjSuJ0AXS8GuRrY/ZUFg=
+github.com/rronan/gonetdicom v0.0.0-20221204000845-7d5ac8d0a869/go.mod h1:76yjeL68PTFRjeazOQuKgFBzCaxbvi0uQaHEIeP2k3A=
 github.com/suyashkumar/dicom v1.0.5 h1:2b2pdEhGoKrHYHTQjNBXGsRbv8Py5AX/9QNPJJqiIpw=
 github.com/suyashkumar/dicom v1.0.5/go.mod h1:bXhNY97UnGkBWqXSbSeMgdTv70LIwoOhZJDEGzswIUQ=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
