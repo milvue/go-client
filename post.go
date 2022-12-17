@@ -11,7 +11,11 @@ var MILVUE_API_URL = getenv("MILVUE_API_URL", "")
 
 func Post(api_url string, dcm_slice []*dicom.Dataset, token string) error {
 	url := api_url + "/v3/studies?signed_url=false"
-	headers := map[string]string{"x-goog-meta-owner": token, "Content-Type": "multipart/related; type=application/dicom"}
+	headers := map[string]string{
+		"x-goog-meta-owner": token,
+		"Content-Type":      "multipart/related; type=application/dicom",
+		"Accept":            "application/json",
+	}
 	return dicomweb.Post(url, dcm_slice, headers)
 }
 

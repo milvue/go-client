@@ -8,6 +8,13 @@ import (
 	"github.com/suyashkumar/dicom/pkg/tag"
 )
 
+var API_URL = getenv("MILVUE_API_URL", "")
+var TOKEN = getenv("MILVUE_TOKEN", "")
+var DICOM_PATH_SLICE = []string{
+	"data/study/DX.1.2.840.113564.1721633113.20201101205936468650.3003000225002.dcm",
+	"data/study/DX.1.2.840.113564.1721633113.20201101205936484660.3003000225002.dcm",
+}
+
 func getenv(key, fallback string) string {
 	value := os.Getenv(key)
 	if len(value) == 0 {
