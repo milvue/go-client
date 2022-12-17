@@ -10,3 +10,6 @@ require (
 	github.com/suyashkumar/dicom v1.0.5 // indirect
 	golang.org/x/text v0.4.0 // indirect
 )
+
+// this allows to modify gonetdicom locally to fix things
+replace github.com/rronan/gonetdicom => ../gonetdicom

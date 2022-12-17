@@ -1,8 +1,12 @@
 package goclient
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"mime"
+	"mime/multipart"
 	"net/http"
 
 	"github.com/rronan/gonetdicom/dicomutil"
@@ -10,7 +14,7 @@ import (
 	"github.com/suyashkumar/dicom"
 )
 
-func Get(api_url, study_instance_uid string, inference_command string, token string) ([]*dicom.Dataset, []byte, error) {
+func Get(api_url, study_instance_uid string, inference_command string, token string) ([]*dicom.Dataset, GetResponse, error) {
 	url := fmt.Sprintf(
 		"%s/v3/studies/%s?inference_command=%s&signed_url=false",
 		api_url,
@@ -22,12 +26,13 @@ func Get(api_url, study_instance_uid string, inference_command string, token str
 		"Content-Type":      "multipart/related; type=application/dicom",
 		"Accept":            "multipart/related",
 	}
-	dcm_slice, msg, err := dicomweb.Get(url, headers)
+	dcm_slice, msg, err := dicomweb.Wado(url, headers)
+	var get_response GetResponse
+	json.Unmarshal(msg, &get_response)
 	if err != nil {
-		return []*dicom.Dataset{}, []byte{}, err
+		return []*dicom.Dataset{}, GetResponse{}, err
 	}
-	// Unmarshal msg as open, see https://github.com/deepmap/oapi-codegen
-	return dcm_slice, msg, nil
+	return dcm_slice, get_response, nil
 }
 
 func downloadSignedUrl(signed_url string, token string) (*dicom.Dataset, error) {
@@ -50,7 +55,7 @@ func downloadSignedUrl(signed_url string, token string) (*dicom.Dataset, error) 
 	return dicomutil.Bytes2Dicom(data)
 }
 
-func GetSignedUrl(api_url, study_instance_uid string, inference_command string, token string) ([]*dicom.Dataset, []byte, error) {
+func GetSignedUrl(api_url, study_instance_uid string, inference_command string, token string) ([]*dicom.Dataset, GetResponse, error) {
 	url := fmt.Sprintf(
 		"%s/v3/studies/%s?inference_command=%s&signed_url=true",
 		api_url,
@@ -60,21 +65,28 @@ func GetSignedUrl(api_url, study_instance_uid string, inference_command string, 
 	headers := map[string]string{
 		"x-goog-meta-owner": token,
 		"Content-Type":      "application/json",
-		"Accept":            "multipart/related",
+		"Accept":            "multipart/related", // TODO revert when api fixed
 	}
-	_, msg, err := dicomweb.Get(url, headers)
+	r, err := dicomweb.Get(url, headers)
 	if err != nil {
-		return []*dicom.Dataset{}, []byte{}, err
+		return []*dicom.Dataset{}, GetResponse{}, err
 	}
-	// Unmarshal msg as open, see https://github.com/deepmap/oapi-codegen
-	signed_url_slice := []string{"foo", "bar"}
+	defer r.Body.Close()
+	get_signed_url_response := GetResponse{}
+	// TODO remove in favor of raw application/json
+	_, params, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
+	multipartReader := multipart.NewReader(r.Body, params["boundary"])
+	part, err := multipartReader.NextPart()
+	data, err := io.ReadAll(part)
+	json.Unmarshal(data, &get_signed_url_response)
+	// json.NewDecoder(r.Body).Decode(&get_signed_url_response)
 	dcm_slice := []*dicom.Dataset{}
-	for _, signed_url := range signed_url_slice {
+	for _, signed_url := range get_signed_url_response.SignedUrls {
 		dcm, err := downloadSignedUrl(signed_url, token)
 		if err != nil {
-			return []*dicom.Dataset{}, []byte{}, err
+			return []*dicom.Dataset{}, get_signed_url_response, err
 		}
 		dcm_slice = append(dcm_slice, dcm)
 	}
-	return dcm_slice, msg, nil
+	return dcm_slice, get_signed_url_response, nil
 }

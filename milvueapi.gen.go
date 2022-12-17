@@ -118,7 +118,7 @@ const (
 )
 
 // BaseResponseV3 defines model for BaseResponseV3.
-type BaseResponseV3 struct {
+type GetResponse struct {
 	// StudyInstanceUID The `StudyInstanceUID (0020,000D)` attribute of the study
 	StudyInstanceUID string `json:"StudyInstanceUID"`
 
@@ -130,6 +130,8 @@ type BaseResponseV3 struct {
 
 	// Version Milvue Suite's version
 	Version string `json:"version"`
+
+	SignedUrls []string `json:"signed_urls,omitempty"`
 }
 
 // BodyPartSchema defines model for BodyPartSchema.
