@@ -3,10 +3,7 @@ package goclient
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
-	"mime"
-	"mime/multipart"
 	"net/http"
 
 	"github.com/rronan/gonetdicom/dicomutil"
@@ -24,7 +21,7 @@ func Get(api_url, study_instance_uid string, inference_command string, token str
 	headers := map[string]string{
 		"x-goog-meta-owner": token,
 		"Content-Type":      "multipart/related; type=application/dicom",
-		"Accept":            "multipart/related",
+		"Accept":            "multipart/related, application/json",
 	}
 	dcm_slice, msg, err := dicomweb.Wado(url, headers)
 	var get_response GetResponse
@@ -65,7 +62,8 @@ func GetSignedUrl(api_url, study_instance_uid string, inference_command string, 
 	headers := map[string]string{
 		"x-goog-meta-owner": token,
 		"Content-Type":      "application/json",
-		"Accept":            "multipart/related", // TODO revert when api fixed
+		// "Accept":            "multipart/related",
+		"Accept": "application/json", // TODO revert when api fixed
 	}
 	r, err := dicomweb.Get(url, headers)
 	if err != nil {
@@ -74,12 +72,12 @@ func GetSignedUrl(api_url, study_instance_uid string, inference_command string, 
 	defer r.Body.Close()
 	get_signed_url_response := GetResponse{}
 	// TODO remove in favor of raw application/json
-	_, params, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
-	multipartReader := multipart.NewReader(r.Body, params["boundary"])
-	part, err := multipartReader.NextPart()
-	data, err := io.ReadAll(part)
-	json.Unmarshal(data, &get_signed_url_response)
-	// json.NewDecoder(r.Body).Decode(&get_signed_url_response)
+	// _, params, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
+	// multipartReader := multipart.NewReader(r.Body, params["boundary"])
+	// part, err := multipartReader.NextPart()
+	// data, err := io.ReadAll(part)
+	// json.Unmarshal(data, &get_signed_url_response)
+	json.NewDecoder(r.Body).Decode(&get_signed_url_response)
 	dcm_slice := []*dicom.Dataset{}
 	for _, signed_url := range get_signed_url_response.SignedUrls {
 		dcm, err := downloadSignedUrl(signed_url, token)
