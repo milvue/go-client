@@ -23,12 +23,12 @@ func Get(api_url, study_instance_uid string, inference_command string, token str
 		"Content-Type":      "multipart/related; type=application/dicom",
 		"Accept":            "multipart/related, application/json",
 	}
-	dcm_slice, msg, err := dicomweb.Wado(url, headers)
-	var get_response GetResponse
-	json.Unmarshal(msg, &get_response)
+	dcm_slice, resp, err := dicomweb.Wado(url, headers)
 	if err != nil {
 		return []*dicom.Dataset{}, GetResponse{}, err
 	}
+	var get_response GetResponse
+	json.NewDecoder(resp.Body).Decode(&get_response)
 	return dcm_slice, get_response, nil
 }
 
@@ -62,29 +62,23 @@ func GetSignedUrl(api_url, study_instance_uid string, inference_command string, 
 	headers := map[string]string{
 		"x-goog-meta-owner": token,
 		"Content-Type":      "application/json",
-		// "Accept":            "multipart/related",
-		"Accept": "application/json", // TODO revert when api fixed
+		"Accept":            "application/json",
 	}
-	r, err := dicomweb.Get(url, headers)
+	resp, err := dicomweb.Get(url, headers)
 	if err != nil {
 		return []*dicom.Dataset{}, GetResponse{}, err
 	}
-	defer r.Body.Close()
-	get_signed_url_response := GetResponse{}
-	// TODO remove in favor of raw application/json
-	// _, params, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
-	// multipartReader := multipart.NewReader(r.Body, params["boundary"])
-	// part, err := multipartReader.NextPart()
-	// data, err := io.ReadAll(part)
-	// json.Unmarshal(data, &get_signed_url_response)
-	json.NewDecoder(r.Body).Decode(&get_signed_url_response)
+	defer resp.Body.Close()
+	get_response := GetResponse{}
+	json.NewDecoder(resp.Body).Decode(&get_response)
 	dcm_slice := []*dicom.Dataset{}
-	for _, signed_url := range get_signed_url_response.SignedUrls {
+	for _, signed_url := range get_response.SignedUrls {
 		dcm, err := downloadSignedUrl(signed_url, token)
 		if err != nil {
-			return []*dicom.Dataset{}, get_signed_url_response, err
+			return []*dicom.Dataset{}, get_response, err
 		}
 		dcm_slice = append(dcm_slice, dcm)
 	}
-	return dcm_slice, get_signed_url_response, nil
+	get_response.SignedUrls = nil
+	return dcm_slice, get_response, nil
 }
