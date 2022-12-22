@@ -10,4 +10,4 @@ In addition, the following structs (generated with https://github.com/deepmap/oa
 - `GetSmarturgencesResponseV3`: schema for *v3/smarturgences/{study_instance_uid}*, Smarturgences results
 - `GetSmartxpertResponseV3`: schema for *v3/smartxpert/{study_instance_uid}*, Smartxpert results
 
-Please contact milvue.com for more information.
+Please write to contact@milvue.com for more information on Milvue integration
