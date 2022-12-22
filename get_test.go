@@ -11,8 +11,7 @@ func Test_Get(t *testing.T) {
 	// API_URL := "http://127.0.0.1:8000"
 	for _, inference_command := range []string{"smarturgences", "smartxpert"} {
 		fmt.Println(inference_command)
-		dcm_slice, get_response, err := Get(API_URL, "1.2.840.113970.1.2.840.113970.6418804.20201101.1205635", inference_command, TOKEN)
-		fmt.Println(get_response)
+		dcm_slice, err := Get(API_URL, "1.2.840.113970.1.2.840.113970.6418804.20201101.1205635", inference_command, TOKEN)
 		if err != nil {
 			panic(err)
 		}
@@ -29,8 +28,7 @@ func Test_Get(t *testing.T) {
 func Test_GetSignedUrl(t *testing.T) {
 	for _, inference_command := range []string{"smarturgences", "smartxpert"} {
 		fmt.Println(inference_command)
-		dcm_slice, get_response, err := GetSignedUrl(API_URL, "1.2.840.113970.1.2.840.113970.6418804.20201101.1205635", inference_command, TOKEN)
-		fmt.Println(get_response)
+		dcm_slice, err := GetSignedUrl(API_URL, "1.2.840.113970.1.2.840.113970.6418804.20201101.1205635", inference_command, TOKEN)
 		if err != nil {
 			panic(err)
 		}

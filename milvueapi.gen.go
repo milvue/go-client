@@ -22,12 +22,10 @@ const (
 
 // Defines values for InferenceStatusEnum.
 const (
-	InferenceStatusEnumDone        InferenceStatusEnum = "done"
-	InferenceStatusEnumEmpty       InferenceStatusEnum = "empty"
-	InferenceStatusEnumForbidden   InferenceStatusEnum = "forbidden"
-	InferenceStatusEnumNotFound    InferenceStatusEnum = "not_found"
-	InferenceStatusEnumRunning     InferenceStatusEnum = "running"
-	InferenceStatusEnumServerError InferenceStatusEnum = "server_error"
+	InferenceStatusEnumDone      InferenceStatusEnum = "done"
+	InferenceStatusEnumEmpty     InferenceStatusEnum = "empty"
+	InferenceStatusEnumForbidden InferenceStatusEnum = "forbidden"
+	InferenceStatusEnumRunning   InferenceStatusEnum = "running"
 )
 
 // Defines values for LanguageEnum.
@@ -87,9 +85,8 @@ const (
 
 // Defines values for ResponseV3Status.
 const (
-	ResponseV3StatusForbidden   ResponseV3Status = "forbidden"
-	ResponseV3StatusRunning     ResponseV3Status = "running"
-	ResponseV3StatusServerError ResponseV3Status = "server_error"
+	ResponseV3StatusForbidden ResponseV3Status = "forbidden"
+	ResponseV3StatusRunning   ResponseV3Status = "running"
 )
 
 // Defines values for SmarturgencesV3Status.
@@ -117,22 +114,12 @@ const (
 	Normal StructuredReportEnum = "normal"
 )
 
-// BaseResponseV3 defines model for BaseResponseV3.
-type GetResponse struct {
-	// StudyInstanceUID The `StudyInstanceUID (0020,000D)` attribute of the study
-	StudyInstanceUID string `json:"StudyInstanceUID"`
-
-	// Message Optional message
-	Message *string `json:"message,omitempty"`
-
-	// Status Current status of the study
-	Status InferenceStatusEnum `json:"status"`
-
-	// Version Milvue Suite's version
-	Version string `json:"version"`
-
-	SignedUrls []string `json:"signed_urls,omitempty"`
-}
+// Defines values for StudyStatusEnum.
+const (
+	Done    StudyStatusEnum = "done"
+	Error   StudyStatusEnum = "error"
+	Running StudyStatusEnum = "running"
+)
 
 // BodyPartSchema defines model for BodyPartSchema.
 type BodyPartSchema struct {
@@ -167,6 +154,49 @@ type BoundingBoxSchema struct {
 type ErrorResponse struct {
 	Example *string `json:"example,omitempty"`
 	Message string  `json:"message"`
+}
+
+// GetSmarturgencesResponseV3 defines model for GetSmarturgencesResponseV3.
+type GetSmarturgencesResponseV3 struct {
+	union json.RawMessage
+}
+
+// GetSmartxpertResponseV3 defines model for GetSmartxpertResponseV3.
+type GetSmartxpertResponseV3 struct {
+	union json.RawMessage
+}
+
+// GetStudyResponseV3 defines model for GetStudyResponseV3.
+type GetStudyResponseV3 struct {
+	// StudyInstanceUID The `StudyInstanceUID (0020,000D)` attribute of the study
+	StudyInstanceUID string `json:"StudyInstanceUID"`
+
+	// Message Optional message
+	Message *string `json:"message,omitempty"`
+
+	// SignedUrls List of signed urls to download from Milvue server
+	SignedUrls *[]string `json:"signed_urls,omitempty"`
+
+	// Status Current status of the study
+	Status InferenceStatusEnum `json:"status"`
+
+	// Version Milvue Suite's version
+	Version string `json:"version"`
+}
+
+// GetStudyStatusResponseV3 defines model for GetStudyStatusResponseV3.
+type GetStudyStatusResponseV3 struct {
+	// StudyInstanceUID The `StudyInstanceUID (0020,000D)` attribute of the study
+	StudyInstanceUID string `json:"StudyInstanceUID"`
+
+	// Message Optional message
+	Message *string `json:"message,omitempty"`
+
+	// Status Current status of the study
+	Status StudyStatusEnum `json:"status"`
+
+	// Version Milvue Suite's version
+	Version string `json:"version"`
 }
 
 // HTTPValidationError defines model for HTTPValidationError.
@@ -228,8 +258,8 @@ type PostDicomWebResponseV3 struct {
 	RetrieveUrl      *string `json:"retrieve_url,omitempty"`
 }
 
-// PostSignedUrlResponse defines model for PostSignedUrlResponse.
-type PostSignedUrlResponse struct {
+// PostSignedUrlResponseV3 defines model for PostSignedUrlResponseV3.
+type PostSignedUrlResponseV3 struct {
 	// StudyInstanceUID The `StudyInstanceUID (0020,000D)` attribute of the study
 	StudyInstanceUID string            `json:"StudyInstanceUID"`
 	SignedUrls       map[string]string `json:"signed_urls"`
@@ -243,16 +273,6 @@ type ReportSchema struct {
 	Results    []ResultSchema `json:"results"`
 	Techniques []string       `json:"techniques"`
 	Title      string         `json:"title"`
-}
-
-// ResponseSmarturgencesV3 defines model for ResponseSmarturgencesV3.
-type ResponseSmarturgencesV3 struct {
-	union json.RawMessage
-}
-
-// ResponseSmartxpertV3 defines model for ResponseSmartxpertV3.
-type ResponseSmartxpertV3 struct {
-	union json.RawMessage
 }
 
 // ResponseV3 defines model for ResponseV3.
@@ -359,6 +379,9 @@ type StaticReportEnum string
 // StructuredReportEnum An enumeration.
 type StructuredReportEnum string
 
+// StudyStatusEnum An enumeration.
+type StudyStatusEnum string
+
 // ValidationError defines model for ValidationError.
 type ValidationError struct {
 	Loc  []ValidationError_Loc_Item `json:"loc"`
@@ -426,13 +449,13 @@ type PostMultipartV3V3StudiesPostParams struct {
 	Accept         *string `json:"accept,omitempty"`
 }
 
-// GetMultipartV3StudiesStudyInstanceUidGetParams defines parameters for GetMultipartV3StudiesStudyInstanceUidGet.
-type GetMultipartV3StudiesStudyInstanceUidGetParams struct {
+// GetStudyV3StudiesStudyInstanceUidGetParams defines parameters for GetStudyV3StudiesStudyInstanceUidGet.
+type GetStudyV3StudiesStudyInstanceUidGetParams struct {
 	SignedUrl              *bool                 `form:"signed_url,omitempty" json:"signed_url,omitempty"`
 	OutputFormat           *OutputFormatEnum     `form:"output_format,omitempty" json:"output_format,omitempty"`
 	Language               *LanguageEnum         `form:"language,omitempty" json:"language,omitempty"`
 	InferenceCommand       InferenceCommandEnum  `form:"inference_command" json:"inference_command"`
-	Timezone               *float32              `form:"timezone,omitempty" json:"timezone,omitempty"`
+	Timezone               *string               `form:"timezone,omitempty" json:"timezone,omitempty"`
 	OutputSelection        *OutputSelectionEnum  `form:"output_selection,omitempty" json:"output_selection,omitempty"`
 	RecapTheme             *RecapThemeEnum       `form:"recap_theme,omitempty" json:"recap_theme,omitempty"`
 	StructuredReportFormat *StructuredReportEnum `form:"structured_report_format,omitempty" json:"structured_report_format,omitempty"`
@@ -440,23 +463,23 @@ type GetMultipartV3StudiesStudyInstanceUidGetParams struct {
 	Accept                 *string               `json:"accept,omitempty"`
 }
 
-// AsSmarturgencesV3 returns the union data inside the ResponseSmarturgencesV3 as a SmarturgencesV3
-func (t ResponseSmarturgencesV3) AsSmarturgencesV3() (SmarturgencesV3, error) {
+// AsSmarturgencesV3 returns the union data inside the GetSmarturgencesResponseV3 as a SmarturgencesV3
+func (t GetSmarturgencesResponseV3) AsSmarturgencesV3() (SmarturgencesV3, error) {
 	var body SmarturgencesV3
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromSmarturgencesV3 overwrites any union data inside the ResponseSmarturgencesV3 as the provided SmarturgencesV3
-func (t *ResponseSmarturgencesV3) FromSmarturgencesV3(v SmarturgencesV3) error {
+// FromSmarturgencesV3 overwrites any union data inside the GetSmarturgencesResponseV3 as the provided SmarturgencesV3
+func (t *GetSmarturgencesResponseV3) FromSmarturgencesV3(v SmarturgencesV3) error {
 	v.Status = "done"
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeSmarturgencesV3 performs a merge with any union data inside the ResponseSmarturgencesV3, using the provided SmarturgencesV3
-func (t *ResponseSmarturgencesV3) MergeSmarturgencesV3(v SmarturgencesV3) error {
+// MergeSmarturgencesV3 performs a merge with any union data inside the GetSmarturgencesResponseV3, using the provided SmarturgencesV3
+func (t *GetSmarturgencesResponseV3) MergeSmarturgencesV3(v SmarturgencesV3) error {
 	v.Status = "done"
 	b, err := json.Marshal(v)
 	if err != nil {
@@ -468,23 +491,23 @@ func (t *ResponseSmarturgencesV3) MergeSmarturgencesV3(v SmarturgencesV3) error 
 	return err
 }
 
-// AsResponseV3 returns the union data inside the ResponseSmarturgencesV3 as a ResponseV3
-func (t ResponseSmarturgencesV3) AsResponseV3() (ResponseV3, error) {
+// AsResponseV3 returns the union data inside the GetSmarturgencesResponseV3 as a ResponseV3
+func (t GetSmarturgencesResponseV3) AsResponseV3() (ResponseV3, error) {
 	var body ResponseV3
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromResponseV3 overwrites any union data inside the ResponseSmarturgencesV3 as the provided ResponseV3
-func (t *ResponseSmarturgencesV3) FromResponseV3(v ResponseV3) error {
+// FromResponseV3 overwrites any union data inside the GetSmarturgencesResponseV3 as the provided ResponseV3
+func (t *GetSmarturgencesResponseV3) FromResponseV3(v ResponseV3) error {
 	v.Status = "forbidden"
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeResponseV3 performs a merge with any union data inside the ResponseSmarturgencesV3, using the provided ResponseV3
-func (t *ResponseSmarturgencesV3) MergeResponseV3(v ResponseV3) error {
+// MergeResponseV3 performs a merge with any union data inside the GetSmarturgencesResponseV3, using the provided ResponseV3
+func (t *GetSmarturgencesResponseV3) MergeResponseV3(v ResponseV3) error {
 	v.Status = "forbidden"
 	b, err := json.Marshal(v)
 	if err != nil {
@@ -496,7 +519,7 @@ func (t *ResponseSmarturgencesV3) MergeResponseV3(v ResponseV3) error {
 	return err
 }
 
-func (t ResponseSmarturgencesV3) Discriminator() (string, error) {
+func (t GetSmarturgencesResponseV3) Discriminator() (string, error) {
 	var discriminator struct {
 		Discriminator string `json:"status"`
 	}
@@ -504,7 +527,7 @@ func (t ResponseSmarturgencesV3) Discriminator() (string, error) {
 	return discriminator.Discriminator, err
 }
 
-func (t ResponseSmarturgencesV3) ValueByDiscriminator() (interface{}, error) {
+func (t GetSmarturgencesResponseV3) ValueByDiscriminator() (interface{}, error) {
 	discriminator, err := t.Discriminator()
 	if err != nil {
 		return nil, err
@@ -519,33 +542,33 @@ func (t ResponseSmarturgencesV3) ValueByDiscriminator() (interface{}, error) {
 	}
 }
 
-func (t ResponseSmarturgencesV3) MarshalJSON() ([]byte, error) {
+func (t GetSmarturgencesResponseV3) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
 }
 
-func (t *ResponseSmarturgencesV3) UnmarshalJSON(b []byte) error {
+func (t *GetSmarturgencesResponseV3) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
 
-// AsSmartxpertV3 returns the union data inside the ResponseSmartxpertV3 as a SmartxpertV3
-func (t ResponseSmartxpertV3) AsSmartxpertV3() (SmartxpertV3, error) {
+// AsSmartxpertV3 returns the union data inside the GetSmartxpertResponseV3 as a SmartxpertV3
+func (t GetSmartxpertResponseV3) AsSmartxpertV3() (SmartxpertV3, error) {
 	var body SmartxpertV3
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromSmartxpertV3 overwrites any union data inside the ResponseSmartxpertV3 as the provided SmartxpertV3
-func (t *ResponseSmartxpertV3) FromSmartxpertV3(v SmartxpertV3) error {
+// FromSmartxpertV3 overwrites any union data inside the GetSmartxpertResponseV3 as the provided SmartxpertV3
+func (t *GetSmartxpertResponseV3) FromSmartxpertV3(v SmartxpertV3) error {
 	v.Status = "done"
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeSmartxpertV3 performs a merge with any union data inside the ResponseSmartxpertV3, using the provided SmartxpertV3
-func (t *ResponseSmartxpertV3) MergeSmartxpertV3(v SmartxpertV3) error {
+// MergeSmartxpertV3 performs a merge with any union data inside the GetSmartxpertResponseV3, using the provided SmartxpertV3
+func (t *GetSmartxpertResponseV3) MergeSmartxpertV3(v SmartxpertV3) error {
 	v.Status = "done"
 	b, err := json.Marshal(v)
 	if err != nil {
@@ -557,24 +580,24 @@ func (t *ResponseSmartxpertV3) MergeSmartxpertV3(v SmartxpertV3) error {
 	return err
 }
 
-// AsResponseV3 returns the union data inside the ResponseSmartxpertV3 as a ResponseV3
-func (t ResponseSmartxpertV3) AsResponseV3() (ResponseV3, error) {
+// AsResponseV3 returns the union data inside the GetSmartxpertResponseV3 as a ResponseV3
+func (t GetSmartxpertResponseV3) AsResponseV3() (ResponseV3, error) {
 	var body ResponseV3
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromResponseV3 overwrites any union data inside the ResponseSmartxpertV3 as the provided ResponseV3
-func (t *ResponseSmartxpertV3) FromResponseV3(v ResponseV3) error {
-	v.Status = "server_error"
+// FromResponseV3 overwrites any union data inside the GetSmartxpertResponseV3 as the provided ResponseV3
+func (t *GetSmartxpertResponseV3) FromResponseV3(v ResponseV3) error {
+	v.Status = "forbidden"
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeResponseV3 performs a merge with any union data inside the ResponseSmartxpertV3, using the provided ResponseV3
-func (t *ResponseSmartxpertV3) MergeResponseV3(v ResponseV3) error {
-	v.Status = "server_error"
+// MergeResponseV3 performs a merge with any union data inside the GetSmartxpertResponseV3, using the provided ResponseV3
+func (t *GetSmartxpertResponseV3) MergeResponseV3(v ResponseV3) error {
+	v.Status = "forbidden"
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -585,7 +608,7 @@ func (t *ResponseSmartxpertV3) MergeResponseV3(v ResponseV3) error {
 	return err
 }
 
-func (t ResponseSmartxpertV3) Discriminator() (string, error) {
+func (t GetSmartxpertResponseV3) Discriminator() (string, error) {
 	var discriminator struct {
 		Discriminator string `json:"status"`
 	}
@@ -593,7 +616,7 @@ func (t ResponseSmartxpertV3) Discriminator() (string, error) {
 	return discriminator.Discriminator, err
 }
 
-func (t ResponseSmartxpertV3) ValueByDiscriminator() (interface{}, error) {
+func (t GetSmartxpertResponseV3) ValueByDiscriminator() (interface{}, error) {
 	discriminator, err := t.Discriminator()
 	if err != nil {
 		return nil, err
@@ -601,19 +624,19 @@ func (t ResponseSmartxpertV3) ValueByDiscriminator() (interface{}, error) {
 	switch discriminator {
 	case "done":
 		return t.AsSmartxpertV3()
-	case "server_error":
+	case "forbidden":
 		return t.AsResponseV3()
 	default:
 		return nil, errors.New("unknown discriminator value: " + discriminator)
 	}
 }
 
-func (t ResponseSmartxpertV3) MarshalJSON() ([]byte, error) {
+func (t GetSmartxpertResponseV3) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
 }
 
-func (t *ResponseSmartxpertV3) UnmarshalJSON(b []byte) error {
+func (t *GetSmartxpertResponseV3) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }

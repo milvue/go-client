@@ -70,7 +70,7 @@
                                             "$ref": "#/components/schemas/PostDicomWebResponseV3"
                                         },
                                         {
-                                            "$ref": "#/components/schemas/PostSignedUrlResponse"
+                                            "$ref": "#/components/schemas/PostSignedUrlResponseV3"
                                         }
                                     ]
                                 }
@@ -136,11 +136,96 @@
                 ]
             }
         },
+        "/v3/studies/{study_instance_uid}/status": {
+            "get": {
+                "summary": "v3 - Get Study Status",
+                "description": "GET the status for a given study.\n\nExample:\n```\ncurl --header \"x-goog-meta-owner: <my-api-key>\" --header \"Accept: application/json\" -X GET \"https://dev.predict.milvue.com/v3/studies/<my-StudyInstanceUID>/status\"\n```\nReturn:\n- A json with the prediction status (e.g. `running`)",
+                "operationId": "_get_study_status_v3_studies__study_instance_uid__status_get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Study Instance Uid",
+                            "type": "string"
+                        },
+                        "name": "study_instance_uid",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetStudyStatusResponseV3"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Exceeded quota",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
         "/v3/studies/{study_instance_uid}": {
             "get": {
                 "summary": "v3 - Get Dicom Results (WADO)",
-                "description": "GET a study from Milvue API, in Multipart/Related format (WADO).\n\nExample:\n```\ncurl --header \"x-goog-meta-owner: <my-api-key>\" --header \"Accept: multipart/related; type=application/dicom; transfer-syntax=*, application/json\" -X GET \"https://dev.predict.milvue.com/v3/studies/<my-StudyInstanceUID>?inference_command=smarturgences\" --output \"response_content.txt\"\n```\nReturn:\n- A multipart/related response with several `application/dicom` parts.\n\nOR\n\n- A json with the prediction status (e.g. `running`): a raw json if the header `Accept: ...` contains `application/json`, or encapsulated in a multipart message otherwise.",
-                "operationId": "_get_multipart_v3_studies__study_instance_uid__get",
+                "description": "GET a study from Milvue API, in Multipart/Related format (WADO).\n\nExample:\n```\ncurl --header \"x-goog-meta-owner: <my-api-key>\" --header \"Accept: multipart/related; type=application/dicom; transfer-syntax=*, application/json\" -X GET \"https://dev.predict.milvue.com/v3/studies/<my-StudyInstanceUID>?inference_command=smarturgences\" --output \"response_content.txt\"\n```\nReturn:\n- 1. A multipart/related response with several `application/dicom` parts.\n\nOR\n\n- 2. A json with the prediction status (e.g. `running`): a raw json if the header `Accept: ...` contains `application/json`, or encapsulated in a multipart message otherwise.\n\n__Note: the prefered way to get a prediction status is to use `/v3/studies/<my-StudyInstanceUID>/status`. This route should be mainly used to get dicoms, via dicomweb protocol (option 1 above).__",
+                "operationId": "_get_study_v3_studies__study_instance_uid__get",
                 "parameters": [
                     {
                         "required": true,
@@ -189,7 +274,7 @@
                         "required": false,
                         "schema": {
                             "title": "Timezone",
-                            "type": "number"
+                            "type": "string"
                         },
                         "name": "timezone",
                         "in": "query"
@@ -242,7 +327,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/BaseResponseV3"
+                                    "$ref": "#/components/schemas/GetStudyResponseV3"
                                 }
                             },
                             "multipart/related": {}
@@ -335,7 +420,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ResponseSmarturgencesV3"
+                                    "$ref": "#/components/schemas/GetSmarturgencesResponseV3"
                                 }
                             }
                         }
@@ -418,7 +503,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ResponseSmartxpertV3"
+                                    "$ref": "#/components/schemas/GetSmartxpertResponseV3"
                                 }
                             }
                         }
@@ -567,41 +652,6 @@
     },
     "components": {
         "schemas": {
-            "BaseResponseV3": {
-                "title": "BaseResponseV3",
-                "required": [
-                    "StudyInstanceUID",
-                    "status",
-                    "version"
-                ],
-                "type": "object",
-                "properties": {
-                    "StudyInstanceUID": {
-                        "title": "StudyInstanceUID",
-                        "type": "string",
-                        "description": "The `StudyInstanceUID (0020,000D)` attribute of the study"
-                    },
-                    "status": {
-                        "title": "Status",
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/InferenceStatusEnum"
-                            }
-                        ],
-                        "description": "Current status of the study"
-                    },
-                    "version": {
-                        "title": "Version",
-                        "type": "string",
-                        "description": "Milvue Suite's version"
-                    },
-                    "message": {
-                        "title": "Message",
-                        "type": "string",
-                        "description": "Optional message"
-                    }
-                }
-            },
             "BodyPartSchema": {
                 "title": "BodyPartSchema",
                 "required": [
@@ -694,6 +744,122 @@
                     }
                 }
             },
+            "GetSmarturgencesResponseV3": {
+                "title": "GetSmarturgencesResponseV3",
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/SmarturgencesV3"
+                    },
+                    {
+                        "$ref": "#/components/schemas/ResponseV3"
+                    }
+                ],
+                "discriminator": {
+                    "propertyName": "status",
+                    "mapping": {
+                        "done": "#/components/schemas/SmarturgencesV3",
+                        "running": "#/components/schemas/ResponseV3",
+                        "forbidden": "#/components/schemas/ResponseV3"
+                    }
+                }
+            },
+            "GetSmartxpertResponseV3": {
+                "title": "GetSmartxpertResponseV3",
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/SmartxpertV3"
+                    },
+                    {
+                        "$ref": "#/components/schemas/ResponseV3"
+                    }
+                ],
+                "discriminator": {
+                    "propertyName": "status",
+                    "mapping": {
+                        "done": "#/components/schemas/SmartxpertV3",
+                        "running": "#/components/schemas/ResponseV3",
+                        "forbidden": "#/components/schemas/ResponseV3"
+                    }
+                }
+            },
+            "GetStudyResponseV3": {
+                "title": "GetStudyResponseV3",
+                "required": [
+                    "StudyInstanceUID",
+                    "status",
+                    "version"
+                ],
+                "type": "object",
+                "properties": {
+                    "StudyInstanceUID": {
+                        "title": "StudyInstanceUID",
+                        "type": "string",
+                        "description": "The `StudyInstanceUID (0020,000D)` attribute of the study"
+                    },
+                    "status": {
+                        "title": "Status",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/InferenceStatusEnum"
+                            }
+                        ],
+                        "description": "Current status of the study"
+                    },
+                    "version": {
+                        "title": "Version",
+                        "type": "string",
+                        "description": "Milvue Suite's version"
+                    },
+                    "message": {
+                        "title": "Message",
+                        "type": "string",
+                        "description": "Optional message"
+                    },
+                    "signed_urls": {
+                        "title": "Signed Urls",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "List of signed urls to download from Milvue server"
+                    }
+                }
+            },
+            "GetStudyStatusResponseV3": {
+                "title": "GetStudyStatusResponseV3",
+                "required": [
+                    "StudyInstanceUID",
+                    "status",
+                    "version"
+                ],
+                "type": "object",
+                "properties": {
+                    "StudyInstanceUID": {
+                        "title": "StudyInstanceUID",
+                        "type": "string",
+                        "description": "The `StudyInstanceUID (0020,000D)` attribute of the study"
+                    },
+                    "status": {
+                        "title": "Status",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/StudyStatusEnum"
+                            }
+                        ],
+                        "description": "Current status of the study"
+                    },
+                    "version": {
+                        "title": "Version",
+                        "type": "string",
+                        "description": "Milvue Suite's version"
+                    },
+                    "message": {
+                        "title": "Message",
+                        "type": "string",
+                        "description": "Optional message"
+                    }
+                }
+            },
             "HTTPValidationError": {
                 "title": "HTTPValidationError",
                 "type": "object",
@@ -721,8 +887,6 @@
                 "enum": [
                     "done",
                     "running",
-                    "server_error",
-                    "not_found",
                     "empty",
                     "forbidden"
                 ],
@@ -745,6 +909,31 @@
                         "title": "StudyInstanceUID",
                         "type": "string",
                         "description": "The `SeriesInstanceUID (0020,000E)` attribute of the series"
+                    }
+                }
+            },
+            "InstanceWithUrlSchema": {
+                "title": "Instance With Url",
+                "required": [
+                    "SOPInstanceUID",
+                    "signed_url"
+                ],
+                "type": "object",
+                "properties": {
+                    "SOPInstanceUID": {
+                        "title": "SOPInstanceUID",
+                        "type": "string",
+                        "description": "The `SOPInstanceUID (0008,0018)` attribute of the dicom instance"
+                    },
+                    "SeriesInstanceUID": {
+                        "title": "StudyInstanceUID",
+                        "type": "string",
+                        "description": "The `SeriesInstanceUID (0020,000E)` attribute of the series"
+                    },
+                    "signed_url": {
+                        "title": "Signed Url",
+                        "type": "string",
+                        "description": "Signed url to upload/download to/from Milvue server"
                     }
                 }
             },
@@ -889,8 +1078,8 @@
                     }
                 }
             },
-            "PostSignedUrlResponse": {
-                "title": "PostSignedUrlResponse",
+            "PostSignedUrlResponseV3": {
+                "title": "PostSignedUrlResponseV3",
                 "required": [
                     "StudyInstanceUID",
                     "signed_urls"
@@ -910,17 +1099,6 @@
                         }
                     }
                 }
-            },
-            "PredictionStatusEnum": {
-                "title": "PredictionStatusEnum",
-                "enum": [
-                    "done",
-                    "running",
-                    "server_error",
-                    "not_found"
-                ],
-                "type": "string",
-                "description": "An enumeration."
             },
             "RecapThemeEnum": {
                 "title": "RecapThemeEnum",
@@ -960,46 +1138,6 @@
                     }
                 }
             },
-            "ResponseSmarturgencesV3": {
-                "title": "ResponseSmarturgencesV3",
-                "oneOf": [
-                    {
-                        "$ref": "#/components/schemas/SmarturgencesV3"
-                    },
-                    {
-                        "$ref": "#/components/schemas/ResponseV3"
-                    }
-                ],
-                "discriminator": {
-                    "propertyName": "status",
-                    "mapping": {
-                        "done": "#/components/schemas/SmarturgencesV3",
-                        "running": "#/components/schemas/ResponseV3",
-                        "server_error": "#/components/schemas/ResponseV3",
-                        "forbidden": "#/components/schemas/ResponseV3"
-                    }
-                }
-            },
-            "ResponseSmartxpertV3": {
-                "title": "ResponseSmartxpertV3",
-                "oneOf": [
-                    {
-                        "$ref": "#/components/schemas/SmartxpertV3"
-                    },
-                    {
-                        "$ref": "#/components/schemas/ResponseV3"
-                    }
-                ],
-                "discriminator": {
-                    "propertyName": "status",
-                    "mapping": {
-                        "done": "#/components/schemas/SmartxpertV3",
-                        "running": "#/components/schemas/ResponseV3",
-                        "server_error": "#/components/schemas/ResponseV3",
-                        "forbidden": "#/components/schemas/ResponseV3"
-                    }
-                }
-            },
             "ResponseV3": {
                 "title": "ResponseV3",
                 "required": [
@@ -1018,7 +1156,6 @@
                         "title": "Status",
                         "enum": [
                             "running",
-                            "server_error",
                             "forbidden"
                         ],
                         "type": "string"
@@ -1288,6 +1425,16 @@
                         "description": "The `StudyInstanceUID (0020,000D)` attribute of the study"
                     }
                 }
+            },
+            "StudyStatusEnum": {
+                "title": "StudyStatusEnum",
+                "enum": [
+                    "done",
+                    "running",
+                    "error"
+                ],
+                "type": "string",
+                "description": "An enumeration."
             },
             "ValidationError": {
                 "title": "ValidationError",
