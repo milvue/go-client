@@ -110,3 +110,39 @@ func GetSignedUrl(api_url, study_instance_uid string, inference_command string, 
 	get_response.SignedUrls = nil
 	return dcm_slice, nil
 }
+
+func GetSmarturgences(api_url, study_instance_uid string, token string) (GetSmarturgencesResponseV3, error) {
+	url := fmt.Sprintf("%s/v3/smarturgences/%s", api_url, study_instance_uid)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return GetSmarturgencesResponseV3{}, err
+	}
+	req.Header.Set("x-goog-meta-owner", token)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return GetSmarturgencesResponseV3{}, err
+	}
+	defer resp.Body.Close()
+	smarturgences_response := GetSmarturgencesResponseV3{}
+	json.NewDecoder(resp.Body).Decode(&smarturgences_response)
+	return smarturgences_response, nil
+}
+
+func GetSmartxpert(api_url, study_instance_uid string, token string) (GetSmartxpertResponseV3, error) {
+	url := fmt.Sprintf("%s/v3/smartxpert/%s", api_url, study_instance_uid)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return GetSmartxpertResponseV3{}, err
+	}
+	req.Header.Set("x-goog-meta-owner", token)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return GetSmartxpertResponseV3{}, err
+	}
+	defer resp.Body.Close()
+	smartxpert_response := GetSmartxpertResponseV3{}
+	json.NewDecoder(resp.Body).Decode(&smartxpert_response)
+	return smartxpert_response, nil
+}

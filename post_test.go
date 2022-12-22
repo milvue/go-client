@@ -1,6 +1,7 @@
 package goclient
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/suyashkumar/dicom"
@@ -34,4 +35,12 @@ func Test_PostSignedUrl(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func Test_PostInteresting(t *testing.T) {
+	status_code, err := PostInteresting(API_URL, StudyInstanceUID, TOKEN)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(status_code)
 }

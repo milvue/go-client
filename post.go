@@ -2,6 +2,7 @@ package goclient
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/rronan/gonetdicom/dicomweb"
 	"github.com/suyashkumar/dicom"
@@ -36,4 +37,20 @@ func PostSignedUrl(api_url string, dcm_slice []*dicom.Dataset, token string) err
 		}
 	}
 	return nil
+}
+
+func PostInteresting(api_url string, study_instance_uid, token string) (*http.Response, error) {
+	url := api_url + "/v3/interesting"
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return &http.Response{}, err
+	}
+	req.Header.Set("x-goog-meta-owner", token)
+	req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return &http.Response{}, err
+	}
+	return resp, nil
 }
