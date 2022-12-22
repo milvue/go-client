@@ -46,6 +46,7 @@ func GetStatus(api_url, study_instance_uid string, token string) (GetStudyStatus
 	return status_response, nil
 }
 
+// type of inference_command is InferenceCommandEnum
 func Get(api_url, study_instance_uid string, inference_command string, token string) ([]*dicom.Dataset, error) {
 	url := fmt.Sprintf(
 		"%s/v3/studies/%s?inference_command=%s&signed_url=false",
