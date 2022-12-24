@@ -1,4 +1,4 @@
-package goclient
+package milvuesdk
 
 import (
 	"encoding/json"

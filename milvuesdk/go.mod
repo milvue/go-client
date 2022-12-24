@@ -1,4 +1,4 @@
-module github.com/milvue/go-client
+module github.com/milvue/go-client/milvuesdk
 
 go 1.19
 
@@ -12,4 +12,4 @@ require (
 )
 
 // this allows to modify gonetdicom locally to fix things
-replace github.com/rronan/gonetdicom => ../gonetdicom
+replace github.com/rronan/gonetdicom => ../../gonetdicom
