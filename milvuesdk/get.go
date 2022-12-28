@@ -20,7 +20,7 @@ func WaitDone(api_url, study_instance_uid string, token string, interval int, ti
 		if err != nil {
 			return GetStudyStatusResponseV3{}, err
 		}
-		if status_response.Status == "done" {
+		if status_response.Status != "running" {
 			return status_response, nil
 		}
 		time.Sleep(time.Duration(interval * 1e9))
@@ -100,6 +100,9 @@ func GetSignedUrl(api_url, study_instance_uid string, inference_command string, 
 	defer resp.Body.Close()
 	get_response := GetStudyResponseV3{}
 	json.NewDecoder(resp.Body).Decode(&get_response)
+	if get_response.SignedUrls == nil || len(*get_response.SignedUrls) == 0 {
+		return []*dicom.Dataset{}, nil
+	}
 	dcm_slice := []*dicom.Dataset{}
 	for _, signed_url := range *get_response.SignedUrls {
 		dcm, err := downloadSignedUrl(signed_url, token)
