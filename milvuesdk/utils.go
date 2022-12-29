@@ -24,16 +24,27 @@ func getenv(key, fallback string) string {
 	return value
 }
 
-func pruneDicoms(dcm_slice []*dicom.Dataset) ([]*dicom.Dataset, error) {
+func pruneDicom(dcm *dicom.Dataset) dicom.Dataset {
+	res := dicom.Dataset{Elements: make([]*dicom.Element, len(dcm.Elements))}
+	for i, e := range dcm.Elements {
+		if e == nil {
+			continue
+		}
+		if e.Tag == tag.PixelData {
+			res.Elements[i] = dicomutil.NULL_PIXEL
+		} else {
+			v := *e
+			res.Elements[i] = &v
+		}
+	}
+	return res
+}
+
+func pruneDicomSlice(dcm_slice []*dicom.Dataset) []*dicom.Dataset {
 	res := []*dicom.Dataset{}
 	for _, dcm := range dcm_slice {
-		pruned_dcm := dcm
-		element, err := pruned_dcm.FindElementByTag(tag.PixelData)
-		if err != nil {
-			return []*dicom.Dataset{}, err
-		}
-		*element = *dicomutil.NULL_PIXEL
-		res = append(res, pruned_dcm)
+		pruned_dcm := pruneDicom(dcm)
+		res = append(res, &pruned_dcm)
 	}
-	return res, nil
+	return res
 }

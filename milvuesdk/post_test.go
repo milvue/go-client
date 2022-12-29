@@ -31,7 +31,7 @@ func Test_PostSignedUrl(t *testing.T) {
 		}
 		dcm_slice = append(dcm_slice, &dcm)
 	}
-	err := Post(API_URL, dcm_slice, TOKEN)
+	err := PostSignedUrl(API_URL, dcm_slice, TOKEN)
 	if err != nil {
 		panic(err)
 	}

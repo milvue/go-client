@@ -25,16 +25,15 @@ func Post(api_url string, dcm_slice []*dicom.Dataset, token string) error {
 
 func PostSignedUrl(api_url string, dcm_slice []*dicom.Dataset, token string) error {
 	url := fmt.Sprintf("%s/v3/studies?signed_url=true", api_url)
-	pruned_dcm_slice, err := pruneDicoms(dcm_slice)
-	if err != nil {
-		return err
-	}
 	headers := map[string]string{
 		"x-goog-meta-owner": token,
 		"Content-Type":      "application/dicom",
 		"Accept":            "application/json",
 	}
-	r, err := dicomweb.Post(url, pruned_dcm_slice, headers)
+	r, err := dicomweb.Post(url, pruneDicomSlice(dcm_slice), headers)
+	if err != nil {
+		return err
+	}
 	defer r.Body.Close()
 	post_signed_url_response := PostSignedUrlResponseV3{}
 	json.NewDecoder(r.Body).Decode(&post_signed_url_response)
