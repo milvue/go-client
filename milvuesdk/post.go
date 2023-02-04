@@ -19,7 +19,7 @@ func Post(api_url string, dcm_slice []*dicom.Dataset, token string) error {
 		"Content-Type":      "multipart/related; type=application/dicom",
 		"Accept":            "application/json",
 	}
-	_, err := dicomweb.Post(url, dcm_slice, headers)
+	_, err := dicomweb.Stow(url, dcm_slice, headers)
 	return err
 }
 
@@ -30,7 +30,7 @@ func PostSignedUrl(api_url string, dcm_slice []*dicom.Dataset, token string) err
 		"Content-Type":      "application/dicom",
 		"Accept":            "application/json",
 	}
-	r, err := dicomweb.Post(url, pruneDicomSlice(dcm_slice), headers)
+	r, err := dicomweb.Stow(url, pruneDicomSlice(dcm_slice), headers)
 	if err != nil {
 		return err
 	}
