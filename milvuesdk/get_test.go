@@ -2,9 +2,11 @@ package milvuesdk
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/rronan/gonetdicom/dicomutil"
+	"github.com/suyashkumar/dicom"
 )
 
 func Test_GetStatus(t *testing.T) {
@@ -32,6 +34,31 @@ func Test_Get(t *testing.T) {
 	}
 }
 
+func Test_GetToFile(t *testing.T) {
+	OUTDIR := "../data/outputs"
+	for _, inference_command := range []string{"smarturgences", "smartxpert"} {
+		fmt.Println(inference_command)
+		dcm_path_slice, err := GetToFile(API_URL, StudyInstanceUID, inference_command, TOKEN, OUTDIR)
+		if err != nil {
+			panic(err)
+		}
+		for _, dcm_path := range dcm_path_slice {
+			dcm, err := dicom.ParseFile(dcm_path, nil)
+			if err != nil {
+				panic(err)
+			}
+			study_instance_uid, sop_instance_uid, err := dicomutil.GetUIDs(&dcm)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Printf("%s/%s\n", study_instance_uid, sop_instance_uid)
+			err = os.Remove(dcm_path)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+}
 func Test_GetSignedUrl(t *testing.T) {
 	for _, inference_command := range []string{"smarturgences", "smartxpert"} {
 		fmt.Println(inference_command)
@@ -45,6 +72,32 @@ func Test_GetSignedUrl(t *testing.T) {
 				panic(err)
 			}
 			fmt.Printf("%s,%s\n", study_instance_uid, sop_instance_uid)
+		}
+	}
+}
+
+func Test_GetSignedUrlToFile(t *testing.T) {
+	OUTDIR := "../data/outputs"
+	for _, inference_command := range []string{"smarturgences", "smartxpert"} {
+		fmt.Println(inference_command)
+		dcm_path_slice, err := GetSignedUrlToFile(API_URL, StudyInstanceUID, inference_command, TOKEN, OUTDIR)
+		if err != nil {
+			panic(err)
+		}
+		for _, dcm_path := range dcm_path_slice {
+			dcm, err := dicom.ParseFile(dcm_path, nil)
+			if err != nil {
+				panic(err)
+			}
+			study_instance_uid, sop_instance_uid, err := dicomutil.GetUIDs(&dcm)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Printf("%s,%s\n", study_instance_uid, sop_instance_uid)
+			err = os.Remove(dcm_path)
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 }

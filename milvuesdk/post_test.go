@@ -22,6 +22,13 @@ func Test_Post(t *testing.T) {
 	}
 }
 
+func Test_PostUrlFromFile(t *testing.T) {
+	err := PostFromFile(API_URL, DICOM_PATH_SLICE, TOKEN)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func Test_PostSignedUrl(t *testing.T) {
 	dcm_slice := []*dicom.Dataset{}
 	for _, path := range DICOM_PATH_SLICE {
@@ -32,6 +39,13 @@ func Test_PostSignedUrl(t *testing.T) {
 		dcm_slice = append(dcm_slice, &dcm)
 	}
 	err := PostSignedUrl(API_URL, dcm_slice, TOKEN)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func Test_PostSignedUrlFromFile(t *testing.T) {
+	err := PostSignedUrlFromFile(API_URL, DICOM_PATH_SLICE, TOKEN)
 	if err != nil {
 		panic(err)
 	}

@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/deepmap/oapi-codegen v1.12.4
-	github.com/rronan/gonetdicom v0.0.0-20230204011531-9d32dbcbb030
+	github.com/rronan/gonetdicom v0.0.0-20230218192732-0eaa6bda31ac
 	github.com/suyashkumar/dicom v1.0.5
 )
 
@@ -14,5 +14,6 @@ require (
 	golang.org/x/text v0.4.0 // indirect
 )
 
-// this allows to modify gonetdicom locally to fix things
-// replace github.com/rronan/gonetdicom => ../../gonetdicom
+replace github.com/rronan/gonetdicom v0.0.0-20230218192732-0eaa6bda31ac => ../../gonetdicom
+
+replace github.com/suyashkumar/dicom v1.0.5 => github.com/tcheever/suyashkumar-dicom v1.0.6-0.20220603162441-1fb3be6fbd88
