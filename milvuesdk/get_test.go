@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/rronan/gonetdicom/dicomutil"
-	"github.com/suyashkumar/dicom"
 )
 
 func Test_GetStatus(t *testing.T) {
@@ -25,11 +24,11 @@ func Test_Get(t *testing.T) {
 			panic(err)
 		}
 		for _, dcm := range dcm_slice {
-			study_instance_uid, sop_instance_uid, err := dicomutil.GetUIDs(dcm)
+			study_instance_uid, series_instance_uid, sop_instance_uid, err := dicomutil.GetUIDs(dcm)
 			if err != nil {
 				panic(err)
 			}
-			fmt.Printf("%s,%s\n", study_instance_uid, sop_instance_uid)
+			fmt.Printf("%s/%s/%s\n", study_instance_uid, series_instance_uid, sop_instance_uid)
 		}
 	}
 }
@@ -43,15 +42,11 @@ func Test_GetToFile(t *testing.T) {
 			panic(err)
 		}
 		for _, dcm_path := range dcm_path_slice {
-			dcm, err := dicom.ParseFile(dcm_path, nil)
+			study_instance_uid, series_instance_uid, sop_instance_uid, err := dicomutil.ParseFileUIDs(dcm_path)
 			if err != nil {
 				panic(err)
 			}
-			study_instance_uid, sop_instance_uid, err := dicomutil.GetUIDs(&dcm)
-			if err != nil {
-				panic(err)
-			}
-			fmt.Printf("%s/%s\n", study_instance_uid, sop_instance_uid)
+			fmt.Printf("%s/%s/%s\n", study_instance_uid, series_instance_uid, sop_instance_uid)
 			err = os.Remove(dcm_path)
 			if err != nil {
 				panic(err)
@@ -67,11 +62,11 @@ func Test_GetSignedUrl(t *testing.T) {
 			panic(err)
 		}
 		for _, dcm := range dcm_slice {
-			study_instance_uid, sop_instance_uid, err := dicomutil.GetUIDs(dcm)
+			study_instance_uid, series_instance_uid, sop_instance_uid, err := dicomutil.GetUIDs(dcm)
 			if err != nil {
 				panic(err)
 			}
-			fmt.Printf("%s,%s\n", study_instance_uid, sop_instance_uid)
+			fmt.Printf("%s/%s/%s\n", study_instance_uid, series_instance_uid, sop_instance_uid)
 		}
 	}
 }
@@ -85,15 +80,11 @@ func Test_GetSignedUrlToFile(t *testing.T) {
 			panic(err)
 		}
 		for _, dcm_path := range dcm_path_slice {
-			dcm, err := dicom.ParseFile(dcm_path, nil)
+			study_instance_uid, series_instance_uid, sop_instance_uid, err := dicomutil.ParseFileUIDs(dcm_path)
 			if err != nil {
 				panic(err)
 			}
-			study_instance_uid, sop_instance_uid, err := dicomutil.GetUIDs(&dcm)
-			if err != nil {
-				panic(err)
-			}
-			fmt.Printf("%s,%s\n", study_instance_uid, sop_instance_uid)
+			fmt.Printf("%s/%s/%s\n", study_instance_uid, series_instance_uid, sop_instance_uid)
 			err = os.Remove(dcm_path)
 			if err != nil {
 				panic(err)

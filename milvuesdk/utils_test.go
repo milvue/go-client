@@ -15,16 +15,19 @@ func Test_pruneDicom(t *testing.T) {
 		panic(err)
 	}
 	pruned_dcm := pruneDicom(&dcm)
-	study_instance_uid, sop_instance_uid, err := dicomutil.GetUIDs(&dcm)
+	study_instance_uid, series_instance_uid, sop_instance_uid, err := dicomutil.GetUIDs(&dcm)
 	if err != nil {
 		panic(err)
 	}
-	p_study_instance_uid, p_sop_instance_uid, err := dicomutil.GetUIDs(&pruned_dcm)
+	p_study_instance_uid, p_series_instance_uid, p_sop_instance_uid, err := dicomutil.GetUIDs(&pruned_dcm)
 	if err != nil {
 		panic(err)
 	}
 	if study_instance_uid != p_study_instance_uid {
 		panic(errors.New("Inconsistent study_instance_uid"))
+	}
+	if series_instance_uid != p_series_instance_uid {
+		panic(errors.New("Inconsistent series_instance_uid"))
 	}
 	if sop_instance_uid != p_sop_instance_uid {
 		panic(errors.New("Inconsistent study_instance_uid"))

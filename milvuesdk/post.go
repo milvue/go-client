@@ -49,7 +49,7 @@ func PostSignedUrl(api_url string, dcm_slice []*dicom.Dataset, token string) err
 	post_signed_url_response := PostSignedUrlResponseV3{}
 	json.NewDecoder(r.Body).Decode(&post_signed_url_response)
 	for _, dcm := range dcm_slice {
-		_, sop_instance_uid, err := dicomutil.GetUIDs(dcm)
+		_, _, sop_instance_uid, err := dicomutil.GetUIDs(dcm)
 		if err != nil {
 			return err
 		}
@@ -90,7 +90,7 @@ func PostSignedUrlFromFile(api_url string, dcm_path_slice []string, token string
 	post_signed_url_response := PostSignedUrlResponseV3{}
 	json.NewDecoder(r.Body).Decode(&post_signed_url_response)
 	for i, dcm_path := range dcm_path_slice {
-		_, sop_instance_uid, err := dicomutil.GetUIDs(dcm_slice[i])
+		_, _, sop_instance_uid, err := dicomutil.GetUIDs(dcm_slice[i])
 		if err != nil {
 			return err
 		}
