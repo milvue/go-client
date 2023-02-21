@@ -175,7 +175,7 @@ func GetSignedUrlToFile(api_url, study_instance_uid string, inference_command st
 		return res, nil
 	}
 	for _, signed_url := range *get_response.SignedUrls {
-		dcm_path := fmt.Sprintf("%s/%x", folder, dicomutil.RandomDicomName())
+		dcm_path := fmt.Sprintf("%s/%s", folder, dicomutil.RandomDicomName())
 		err := downloadSignedUrlToFile(signed_url, token, dcm_path)
 		if err != nil {
 			return res, err
