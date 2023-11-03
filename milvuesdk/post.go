@@ -23,6 +23,17 @@ func Post(api_url string, dcm_slice []*dicom.Dataset, token string) error {
 	return err
 }
 
+func PostFromFile(api_url string, dcm_path_slice []string, token string) error {
+	url := api_url + "/v3/studies?signed_url=false"
+	headers := map[string]string{
+		"x-goog-meta-owner": token,
+		"Content-Type":      "multipart/related; type=application/dicom",
+		"Accept":            "application/json",
+	}
+	_, err := dicomweb.StowFromFile(url, dcm_path_slice, headers)
+	return err
+}
+
 func PostSignedUrl(api_url string, dcm_slice []*dicom.Dataset, token string) error {
 	url := fmt.Sprintf("%s/v3/studies?signed_url=true", api_url)
 	headers := map[string]string{
@@ -38,7 +49,7 @@ func PostSignedUrl(api_url string, dcm_slice []*dicom.Dataset, token string) err
 	post_signed_url_response := PostSignedUrlResponseV3{}
 	json.NewDecoder(r.Body).Decode(&post_signed_url_response)
 	for _, dcm := range dcm_slice {
-		_, sop_instance_uid, err := dicomutil.GetUIDs(dcm)
+		_, _, sop_instance_uid, err := dicomutil.GetUIDs(dcm)
 		if err != nil {
 			return err
 		}
@@ -49,6 +60,47 @@ func PostSignedUrl(api_url string, dcm_slice []*dicom.Dataset, token string) err
 		}
 		signed_url := post_signed_url_response.SignedUrls[sop_instance_uid]
 		err = dicomweb.Put(signed_url, dcm, headers)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func PostSignedUrlFromFile(api_url string, dcm_path_slice []string, token string) error {
+	url := fmt.Sprintf("%s/v3/studies?signed_url=true", api_url)
+	headers := map[string]string{
+		"x-goog-meta-owner": token,
+		"Content-Type":      "application/dicom",
+		"Accept":            "application/json",
+	}
+	dcm_slice := []*dicom.Dataset{}
+	for _, dcm_path := range dcm_path_slice {
+		dcm, err := dicom.ParseFile(dcm_path, nil, dicom.SkipPixelData())
+		if err != nil {
+			return err
+		}
+		dcm_slice = append(dcm_slice, &dcm)
+	}
+	r, err := dicomweb.Stow(url, pruneDicomSlice(dcm_slice), headers)
+	if err != nil {
+		return err
+	}
+	defer r.Body.Close()
+	post_signed_url_response := PostSignedUrlResponseV3{}
+	json.NewDecoder(r.Body).Decode(&post_signed_url_response)
+	for i, dcm_path := range dcm_path_slice {
+		_, _, sop_instance_uid, err := dicomutil.GetUIDs(dcm_slice[i])
+		if err != nil {
+			return err
+		}
+		// don't know why but I need to redeclare this
+		headers = map[string]string{
+			"x-goog-meta-owner": token,
+			"Content-Type":      "application/dicom",
+		}
+		signed_url := post_signed_url_response.SignedUrls[sop_instance_uid]
+		err = dicomweb.PutFromFile(signed_url, dcm_path, headers)
 		if err != nil {
 			return err
 		}
