@@ -1,11 +1,11 @@
 module github.com/milvue/go-client/milvuesdk
 
-go 1.19
+go 1.21
 
 require (
 	github.com/deepmap/oapi-codegen v1.12.4
 	github.com/rronan/gonetdicom v0.0.0-20230218192732-0eaa6bda31ac
-	github.com/suyashkumar/dicom v1.0.6-0.20230220030505-954baa99570f
+	github.com/suyashkumar/dicom v1.0.6
 )
 
 require (

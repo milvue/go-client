@@ -78,7 +78,7 @@ func PostSignedUrlFromFile(api_url string, dcm_path_slice []string, token string
 	for _, dcm_path := range dcm_path_slice {
 		dcm, err := dicom.ParseFile(dcm_path, nil, dicom.SkipPixelData())
 		if err != nil {
-			panic(err)
+			return err
 		}
 		dcm_slice = append(dcm_slice, &dcm)
 	}

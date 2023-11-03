@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"time"
@@ -91,7 +90,7 @@ func downloadSignedUrl(signed_url string, token string) (*dicom.Dataset, error) 
 		return &dicom.Dataset{}, err
 	}
 	defer resp.Body.Close()
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return &dicom.Dataset{}, err
 	}
