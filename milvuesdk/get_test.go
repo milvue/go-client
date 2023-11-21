@@ -43,6 +43,7 @@ func Test_GetToFile(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, dcm_path := range dcm_path_slice {
+			fmt.Println(dcm_path)
 			study_instance_uid, series_instance_uid, sop_instance_uid, err := dicomutil.ParseFileUIDs(dcm_path)
 			if err != nil {
 				t.Fatal(err)

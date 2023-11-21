@@ -2,6 +2,7 @@ package milvuesdk
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -55,9 +56,16 @@ func Get(api_url, study_instance_uid string, inference_command string, token str
 		inference_command,
 	)
 	headers := map[string]string{"x-goog-meta-owner": token, "Content-Type": "multipart/related; type=application/dicom"}
-	dcm_slice, _, err := dicomweb.Wado(url, headers)
+	dcm_slice, byte_slice, err := dicomweb.Wado(url, headers)
 	if err != nil {
 		return []*dicom.Dataset{}, err
+	}
+	if len(byte_slice) > 0 {
+		var status_response GetStudyStatusResponseV3
+		_ = json.Unmarshal(byte_slice, &status_response)
+		if status_response.Status == "running" {
+			return []*dicom.Dataset{}, errors.New("PredictionRunning")
+		}
 	}
 	return dcm_slice, nil
 }
@@ -70,9 +78,16 @@ func GetToFile(api_url, study_instance_uid string, inference_command string, tok
 		inference_command,
 	)
 	headers := map[string]string{"x-goog-meta-owner": token, "Content-Type": "multipart/related; type=application/dicom"}
-	dcm_path_slice, _, err := dicomweb.WadoToFile(url, headers, folder)
+	dcm_path_slice, byte_slice, err := dicomweb.WadoToFile(url, headers, folder)
 	if err != nil {
 		return []string{}, err
+	}
+	if len(byte_slice) > 0 {
+		var status_response GetStudyStatusResponseV3
+		_ = json.Unmarshal(byte_slice, &status_response)
+		if status_response.Status == "running" {
+			return []string{}, errors.New("PredictionRunning")
+		}
 	}
 	return dcm_path_slice, nil
 }
