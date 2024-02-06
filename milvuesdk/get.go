@@ -189,6 +189,9 @@ func GetSignedUrlToFile(api_url, study_instance_uid string, inference_command st
 	defer resp.Body.Close()
 	get_response := GetStudyResponseV3{}
 	json.NewDecoder(resp.Body).Decode(&get_response)
+	if get_response.Status == "running" {
+		return res, errors.New("PredictionRunning")
+	}
 	if get_response.SignedUrls == nil || len(*get_response.SignedUrls) == 0 {
 		return res, nil
 	}
