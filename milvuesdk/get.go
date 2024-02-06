@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -63,6 +64,9 @@ func Get(api_url, study_instance_uid string, inference_command string, token str
 	if len(byte_slice) > 0 {
 		var status_response GetStudyStatusResponseV3
 		_ = json.Unmarshal(byte_slice, &status_response)
+		if getenv("LOG_LEVEL", "INFO") == "DEBUG" {
+			log.Println(fmt.Sprintf("%.150s %s %s %s", string(byte_slice), status_response.StudyInstanceUID, status_response.Status, status_response.Version))
+		}
 		if status_response.Status == "running" {
 			return []*dicom.Dataset{}, errors.New("PredictionRunning")
 		}
