@@ -27,7 +27,7 @@ func WaitDone(api_url, study_instance_uid string, token string, interval int, ti
 		}
 		time.Sleep(time.Duration(interval * 1e9))
 	}
-	return status_response, nil
+	return status_response, errors.New("PredictionTimeout")
 }
 
 func GetStatus(api_url, study_instance_uid string, token string) (GetStudyStatusResponseV3, error) {
