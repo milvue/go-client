@@ -75,6 +75,7 @@ func Get(api_url, study_instance_uid string, inference_command string, token str
 }
 
 func GetToFile(api_url, study_instance_uid string, inference_command string, token string, folder string) ([]string, error) {
+	log.Println("THIS IS TEST MILVUESDK CW") // To remove
 	url := fmt.Sprintf(
 		"%s/v3/studies/%s?inference_command=%s&signed_url=false",
 		api_url,
