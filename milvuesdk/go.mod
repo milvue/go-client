@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/deepmap/oapi-codegen v1.12.4
-	github.com/rronan/gonetdicom v0.0.0-20240423100022-0e858946f169 // TODO revise version when PR merged in gonetdicom
+	github.com/rronan/gonetdicom v0.0.0-20240423141507-f0c0b6643c1e // TODO revise version when PR merged in gonetdicom
 	github.com/suyashkumar/dicom v1.0.6
 )
 

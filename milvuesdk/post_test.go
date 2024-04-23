@@ -56,5 +56,6 @@ func Test_PostInteresting(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer status_code.Body.Close()
 	fmt.Println(status_code)
 }
