@@ -19,8 +19,12 @@ func Post(api_url string, dcm_slice []*dicom.Dataset, token string) error {
 		"Content-Type":      "multipart/related; type=application/dicom",
 		"Accept":            "application/json",
 	}
-	_, err := dicomweb.Stow(url, dcm_slice, headers)
-	return err
+	resp, err := dicomweb.Stow(url, dcm_slice, headers)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	return nil
 }
 
 func PostFromFile(api_url string, dcm_path_slice []string, token string) error {
@@ -30,8 +34,12 @@ func PostFromFile(api_url string, dcm_path_slice []string, token string) error {
 		"Content-Type":      "multipart/related; type=application/dicom",
 		"Accept":            "application/json",
 	}
-	_, err := dicomweb.StowFromFile(url, dcm_path_slice, headers)
-	return err
+	resp, err := dicomweb.StowFromFile(url, dcm_path_slice, headers)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	return nil
 }
 
 func PostSignedUrl(api_url string, dcm_slice []*dicom.Dataset, token string) error {
