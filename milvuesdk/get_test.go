@@ -10,7 +10,7 @@ import (
 )
 
 func Test_GetStatus(t *testing.T) {
-	status_response, err := GetStatus(API_URL, StudyInstanceUID, TOKEN)
+	status_response, err := GetStatus(API_URL, StudyInstanceUID, TOKEN, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -20,7 +20,7 @@ func Test_GetStatus(t *testing.T) {
 func Test_Get(t *testing.T) {
 	for _, inference_command := range []string{"smarturgences", "smartxpert"} {
 		fmt.Println(inference_command)
-		dcm_slice, err := Get(API_URL, StudyInstanceUID, inference_command, TOKEN)
+		dcm_slice, err := Get(API_URL, StudyInstanceUID, inference_command, TOKEN, 0)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -38,7 +38,7 @@ func Test_GetToFile(t *testing.T) {
 	OUTDIR := "../data/outputs"
 	for _, inference_command := range []string{"smarturgences", "smartxpert"} {
 		fmt.Println(inference_command)
-		dcm_path_slice, err := GetToFile(API_URL, StudyInstanceUID, inference_command, TOKEN, OUTDIR)
+		dcm_path_slice, err := GetToFile(API_URL, StudyInstanceUID, inference_command, TOKEN, OUTDIR, 0)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -59,7 +59,7 @@ func Test_GetToFile(t *testing.T) {
 func Test_GetSignedUrl(t *testing.T) {
 	for _, inference_command := range []string{"smarturgences", "smartxpert"} {
 		fmt.Println(inference_command)
-		dcm_slice, err := GetSignedUrl(API_URL, StudyInstanceUID, inference_command, TOKEN)
+		dcm_slice, err := GetSignedUrl(API_URL, StudyInstanceUID, inference_command, TOKEN, 0)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -77,7 +77,7 @@ func Test_GetSignedUrlToFile(t *testing.T) {
 	OUTDIR := "../data/outputs"
 	for _, inference_command := range []string{"smarturgences", "smartxpert"} {
 		fmt.Println(inference_command)
-		dcm_path_slice, err := GetSignedUrlToFile(API_URL, StudyInstanceUID, inference_command, TOKEN, OUTDIR)
+		dcm_path_slice, err := GetSignedUrlToFile(API_URL, StudyInstanceUID, inference_command, TOKEN, OUTDIR, 0)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -96,7 +96,7 @@ func Test_GetSignedUrlToFile(t *testing.T) {
 }
 
 func Test_GetSmarturgences(t *testing.T) {
-	smarturgences_response, err := GetSmarturgences(API_URL, StudyInstanceUID, TOKEN)
+	smarturgences_response, err := GetSmarturgences(API_URL, StudyInstanceUID, TOKEN, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -108,7 +108,7 @@ func Test_GetSmarturgences(t *testing.T) {
 }
 
 func Test_GetSmartxpert(t *testing.T) {
-	smartxpert_response, err := GetSmartxpert(API_URL, StudyInstanceUID, TOKEN)
+	smartxpert_response, err := GetSmartxpert(API_URL, StudyInstanceUID, TOKEN, 0)
 	if err != nil {
 		t.Fatal(err)
 	}

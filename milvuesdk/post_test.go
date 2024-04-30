@@ -16,14 +16,14 @@ func Test_Post(t *testing.T) {
 		}
 		dcm_slice = append(dcm_slice, &dcm)
 	}
-	err := Post(API_URL, dcm_slice, TOKEN)
+	err := Post(API_URL, dcm_slice, TOKEN, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
 func Test_PostUrlFromFile(t *testing.T) {
-	err := PostFromFile(API_URL, DICOM_PATH_SLICE, TOKEN)
+	err := PostFromFile(API_URL, DICOM_PATH_SLICE, TOKEN, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,21 +38,21 @@ func Test_PostSignedUrl(t *testing.T) {
 		}
 		dcm_slice = append(dcm_slice, &dcm)
 	}
-	err := PostSignedUrl(API_URL, dcm_slice, TOKEN)
+	err := PostSignedUrl(API_URL, dcm_slice, TOKEN, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
 func Test_PostSignedUrlFromFile(t *testing.T) {
-	err := PostSignedUrlFromFile(API_URL, DICOM_PATH_SLICE, TOKEN)
+	err := PostSignedUrlFromFile(API_URL, DICOM_PATH_SLICE, TOKEN, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
 func Test_PostInteresting(t *testing.T) {
-	status_code, err := PostInteresting(API_URL, StudyInstanceUID, TOKEN)
+	status_code, err := PostInteresting(API_URL, StudyInstanceUID, TOKEN, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
