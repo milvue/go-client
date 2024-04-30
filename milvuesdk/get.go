@@ -44,6 +44,9 @@ func GetStatus(api_url, study_instance_uid string, token string, client_timeout 
 		return GetStudyStatusResponseV3{}, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return GetStudyStatusResponseV3{}, &dicomweb.RequestError{StatusCode: resp.StatusCode, Err: errors.New(resp.Status)}
+	}
 	status_response := GetStudyStatusResponseV3{}
 	json.NewDecoder(resp.Body).Decode(&status_response)
 	return status_response, nil
@@ -109,6 +112,9 @@ func downloadSignedUrl(signed_url string, token string, client_timeout int) (*di
 		return &dicom.Dataset{}, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return &dicom.Dataset{}, &dicomweb.RequestError{StatusCode: resp.StatusCode, Err: errors.New(resp.Status)}
+	}
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return &dicom.Dataset{}, err
@@ -161,6 +167,9 @@ func downloadSignedUrlToFile(signed_url string, token string, dcm_path string, c
 		return err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return &dicomweb.RequestError{StatusCode: resp.StatusCode, Err: errors.New(resp.Status)}
+	}
 	f, err := os.Create(dcm_path)
 	if err != nil {
 		return err
@@ -219,6 +228,9 @@ func GetSmarturgences(api_url, study_instance_uid string, token string, client_t
 		return GetSmarturgencesResponseV3{}, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return GetSmarturgencesResponseV3{}, &dicomweb.RequestError{StatusCode: resp.StatusCode, Err: errors.New(resp.Status)}
+	}
 	smarturgences_response := GetSmarturgencesResponseV3{}
 	json.NewDecoder(resp.Body).Decode(&smarturgences_response)
 	return smarturgences_response, nil
@@ -237,6 +249,9 @@ func GetSmartxpert(api_url, study_instance_uid string, token string, client_time
 		return GetSmartxpertResponseV3{}, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return GetSmartxpertResponseV3{}, &dicomweb.RequestError{StatusCode: resp.StatusCode, Err: errors.New(resp.Status)}
+	}
 	smartxpert_response := GetSmartxpertResponseV3{}
 	json.NewDecoder(resp.Body).Decode(&smartxpert_response)
 	return smartxpert_response, nil

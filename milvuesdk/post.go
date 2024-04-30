@@ -2,6 +2,7 @@ package milvuesdk
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -91,13 +92,13 @@ func PostSignedUrlFromFile(api_url string, dcm_path_slice []string, token string
 		}
 		dcm_slice = append(dcm_slice, &dcm)
 	}
-	r, err := dicomweb.Stow(url, pruneDicomSlice(dcm_slice), headers, client_timeout)
+	resp, err := dicomweb.Stow(url, pruneDicomSlice(dcm_slice), headers, client_timeout)
 	if err != nil {
 		return err
 	}
-	defer r.Body.Close()
+	defer resp.Body.Close()
 	post_signed_url_response := PostSignedUrlResponseV3{}
-	json.NewDecoder(r.Body).Decode(&post_signed_url_response)
+	json.NewDecoder(resp.Body).Decode(&post_signed_url_response)
 	for i, dcm_path := range dcm_path_slice {
 		_, _, sop_instance_uid, err := dicomutil.GetUIDs(dcm_slice[i])
 		if err != nil {
@@ -129,6 +130,10 @@ func PostInteresting(api_url string, study_instance_uid, token string, client_ti
 	resp, err := client.Do(req)
 	if err != nil {
 		return &http.Response{}, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		defer resp.Body.Close()
+		return &http.Response{}, &dicomweb.RequestError{StatusCode: resp.StatusCode, Err: errors.New(resp.Status)}
 	}
 	return resp, nil
 }
