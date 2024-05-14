@@ -175,7 +175,10 @@ func downloadSignedUrlToFile(signed_url string, token string, dcm_path string, t
 		return err
 	}
 	defer f.Close()
-	io.Copy(f, resp.Body)
+	_, err = io.Copy(f, resp.Body)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
