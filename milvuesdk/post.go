@@ -65,8 +65,9 @@ func PostSignedUrl(api_url string, dcm_slice []*dicom.Dataset, token string, tim
 		}
 		// don't know why but I need to redeclare this
 		headers = map[string]string{
-			"x-goog-meta-owner": token,
 			"Content-Type":      "application/dicom",
+			"x-goog-meta-owner": token, //for GCP
+            "x-ms-blob-type":    "BlockBlob", // for Azure
 		}
 		signed_url := post_signed_url_response.SignedUrls[sop_instance_uid]
 		err = dicomweb.Put(signed_url, dcm, headers, timeout)
@@ -106,8 +107,9 @@ func PostSignedUrlFromFile(api_url string, dcm_path_slice []string, token string
 		}
 		// don't know why but I need to redeclare this
 		headers = map[string]string{
-			"x-goog-meta-owner": token,
 			"Content-Type":      "application/dicom",
+			"x-goog-meta-owner": token, // for GCP
+            "x-ms-blob-type":    "BlockBlob", // for Azure
 		}
 		signed_url := post_signed_url_response.SignedUrls[sop_instance_uid]
 		err = dicomweb.PutFromFile(signed_url, dcm_path, headers, timeout)
