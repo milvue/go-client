@@ -15,6 +15,10 @@ import (
 	"github.com/suyashkumar/dicom"
 )
 
+var ErrPredictionError = errors.New("PredictionError")
+var ErrPredictionRunning = errors.New("PredictionRunning")
+var ErrPredictionTimeout = errors.New("PredictionTimeout")
+
 func WaitDone(api_url, study_instance_uid string, token string, interval int, total_wait_time int, timeout int) (GetStudyStatusResponseV3, error) {
 	t1 := time.Now().Add(time.Duration(total_wait_time * 1e9))
 	var status_response GetStudyStatusResponseV3
@@ -23,12 +27,14 @@ func WaitDone(api_url, study_instance_uid string, token string, interval int, to
 		if err != nil {
 			return GetStudyStatusResponseV3{}, err
 		}
-		if status_response.Status != "running" {
+		if status_response.Status == "error" {
+			return status_response, ErrPredictionError
+		} else if status_response.Status == "done" {
 			return status_response, nil
 		}
 		time.Sleep(time.Duration(interval * 1e9))
 	}
-	return status_response, errors.New("PredictionTimeout")
+	return status_response, ErrPredictionTimeout
 }
 
 func GetStatus(api_url, study_instance_uid string, token string, timeout int) (GetStudyStatusResponseV3, error) {
@@ -52,12 +58,13 @@ func GetStatus(api_url, study_instance_uid string, token string, timeout int) (G
 	return status_response, nil
 }
 
-func Get(api_url, study_instance_uid string, inference_command string, token string, timeout int) ([]*dicom.Dataset, error) {
+func Get(api_url, study_instance_uid string, inference_command string, token string, timeout int, additional_params string) ([]*dicom.Dataset, error) {
 	url := fmt.Sprintf(
-		"%s/v3/studies/%s?inference_command=%s&signed_url=false",
+		"%s/v3/studies/%s?inference_command=%s&signed_url=false%s",
 		api_url,
 		study_instance_uid,
 		inference_command,
+		additional_params,
 	)
 	headers := map[string]string{"x-goog-meta-owner": token, "Content-Type": "multipart/related; type=application/dicom"}
 	dcm_slice, byte_slice, err := dicomweb.Wado(url, headers, timeout)
@@ -68,21 +75,22 @@ func Get(api_url, study_instance_uid string, inference_command string, token str
 		var status_response GetStudyStatusResponseV3
 		_ = json.Unmarshal(byte_slice, &status_response)
 		if getenv("LOG_LEVEL", "INFO") == "DEBUG" {
-			log.Println(fmt.Sprintf("%.150s %s %s %s", string(byte_slice), status_response.StudyInstanceUID, status_response.Status, status_response.Version))
+			log.Printf("%.150s %s %s %s", string(byte_slice), status_response.StudyInstanceUID, status_response.Status, status_response.Version)
 		}
 		if status_response.Status == "running" {
-			return []*dicom.Dataset{}, errors.New("PredictionRunning")
+			return []*dicom.Dataset{}, ErrPredictionRunning
 		}
 	}
 	return dcm_slice, nil
 }
 
-func GetToFile(api_url, study_instance_uid string, inference_command string, token string, folder string, timeout int) ([]string, error) {
+func GetToFile(api_url, study_instance_uid string, inference_command string, token string, folder string, timeout int, additional_params string) ([]string, error) {
 	url := fmt.Sprintf(
-		"%s/v3/studies/%s?inference_command=%s&signed_url=false",
+		"%s/v3/studies/%s?inference_command=%s&signed_url=false%s",
 		api_url,
 		study_instance_uid,
 		inference_command,
+		additional_params,
 	)
 	headers := map[string]string{"x-goog-meta-owner": token, "Content-Type": "multipart/related; type=application/dicom"}
 	dcm_path_slice, byte_slice, err := dicomweb.WadoToFile(url, headers, folder, timeout)
@@ -93,7 +101,7 @@ func GetToFile(api_url, study_instance_uid string, inference_command string, tok
 		var status_response GetStudyStatusResponseV3
 		_ = json.Unmarshal(byte_slice, &status_response)
 		if status_response.Status == "running" {
-			return []string{}, errors.New("PredictionRunning")
+			return []string{}, ErrPredictionRunning
 		}
 	}
 	return dcm_path_slice, nil
@@ -122,12 +130,13 @@ func downloadSignedUrl(signed_url string, token string, timeout int) (*dicom.Dat
 	return dicomutil.Bytes2Dicom(data)
 }
 
-func GetSignedUrl(api_url, study_instance_uid string, inference_command string, token string, timeout int) ([]*dicom.Dataset, error) {
+func GetSignedUrl(api_url, study_instance_uid string, inference_command string, token string, timeout int, additional_params string) ([]*dicom.Dataset, error) {
 	url := fmt.Sprintf(
-		"%s/v3/studies/%s?inference_command=%s&signed_url=true",
+		"%s/v3/studies/%s?inference_command=%s&signed_url=true%s",
 		api_url,
 		study_instance_uid,
 		inference_command,
+		additional_params,
 	)
 	headers := map[string]string{
 		"x-goog-meta-owner": token,
@@ -182,13 +191,14 @@ func downloadSignedUrlToFile(signed_url string, token string, dcm_path string, t
 	return nil
 }
 
-func GetSignedUrlToFile(api_url, study_instance_uid string, inference_command string, token string, folder string, timeout int) ([]string, error) {
+func GetSignedUrlToFile(api_url, study_instance_uid string, inference_command string, token string, folder string, timeout int, additional_params string) ([]string, error) {
 	res := []string{}
 	url := fmt.Sprintf(
-		"%s/v3/studies/%s?inference_command=%s&signed_url=true",
+		"%s/v3/studies/%s?inference_command=%s&signed_url=true%s",
 		api_url,
 		study_instance_uid,
 		inference_command,
+		additional_params,
 	)
 	headers := map[string]string{
 		"x-goog-meta-owner": token,
@@ -202,7 +212,7 @@ func GetSignedUrlToFile(api_url, study_instance_uid string, inference_command st
 	get_response := GetStudyResponseV3{}
 	json.NewDecoder(resp.Body).Decode(&get_response)
 	if get_response.Status == "running" {
-		return res, errors.New("PredictionRunning")
+		return res, ErrPredictionRunning
 	}
 	if get_response.SignedUrls == nil || len(*get_response.SignedUrls) == 0 {
 		return res, nil

@@ -20,7 +20,7 @@ func Test_GetStatus(t *testing.T) {
 func Test_Get(t *testing.T) {
 	for _, inference_command := range []string{"smarturgences", "smartxpert"} {
 		fmt.Println(inference_command)
-		dcm_slice, err := Get(API_URL, StudyInstanceUID, inference_command, TOKEN, 0)
+		dcm_slice, err := Get(API_URL, StudyInstanceUID, inference_command, TOKEN, 0, "")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -38,7 +38,7 @@ func Test_GetToFile(t *testing.T) {
 	OUTDIR := "../data/outputs"
 	for _, inference_command := range []string{"smarturgences", "smartxpert"} {
 		fmt.Println(inference_command)
-		dcm_path_slice, err := GetToFile(API_URL, StudyInstanceUID, inference_command, TOKEN, OUTDIR, 0)
+		dcm_path_slice, err := GetToFile(API_URL, StudyInstanceUID, inference_command, TOKEN, OUTDIR, 0, "")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -59,7 +59,7 @@ func Test_GetToFile(t *testing.T) {
 func Test_GetSignedUrl(t *testing.T) {
 	for _, inference_command := range []string{"smarturgences", "smartxpert"} {
 		fmt.Println(inference_command)
-		dcm_slice, err := GetSignedUrl(API_URL, StudyInstanceUID, inference_command, TOKEN, 0)
+		dcm_slice, err := GetSignedUrl(API_URL, StudyInstanceUID, inference_command, TOKEN, 0, "")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -77,7 +77,7 @@ func Test_GetSignedUrlToFile(t *testing.T) {
 	OUTDIR := "../data/outputs"
 	for _, inference_command := range []string{"smarturgences", "smartxpert"} {
 		fmt.Println(inference_command)
-		dcm_path_slice, err := GetSignedUrlToFile(API_URL, StudyInstanceUID, inference_command, TOKEN, OUTDIR, 0)
+		dcm_path_slice, err := GetSignedUrlToFile(API_URL, StudyInstanceUID, inference_command, TOKEN, OUTDIR, 0, "")
 		if err != nil {
 			t.Fatal(err)
 		}
