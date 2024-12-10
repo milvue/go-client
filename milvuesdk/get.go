@@ -18,6 +18,24 @@ import (
 var ErrPredictionError = errors.New("PredictionError")
 var ErrPredictionRunning = errors.New("PredictionRunning")
 var ErrPredictionTimeout = errors.New("PredictionTimeout")
+var ErrFormattingError = errors.New("FormattingError")
+
+func isFormattingError(err error) bool {
+	reqErr, isReqErr := err.(*dicomweb.RequestError)
+	if !isReqErr {
+		return false
+	}
+	if reqErr.Headers.Get("Content-Type") != "application/json" {
+		return false
+	}
+	var resp_json map[string]string
+	decode_err := json.Unmarshal(reqErr.Content, &resp_json)
+	if decode_err != nil {
+		return false
+	}
+	message, ok := resp_json["message"]
+	return ok && message == "Error formatting study"
+}
 
 func WaitDone(api_url, study_instance_uid string, token string, interval int, total_wait_time int, timeout int) (GetStudyStatusResponseV3, error) {
 	t1 := time.Now().Add(time.Duration(total_wait_time * 1e9))
@@ -69,6 +87,9 @@ func Get(api_url, study_instance_uid string, inference_command string, token str
 	headers := map[string]string{"x-goog-meta-owner": token, "Content-Type": "multipart/related; type=application/dicom"}
 	dcm_slice, byte_slice, err := dicomweb.Wado(url, headers, timeout)
 	if err != nil {
+		if isFormattingError(err) {
+			return []*dicom.Dataset{}, ErrFormattingError
+		}
 		return []*dicom.Dataset{}, err
 	}
 	if len(byte_slice) > 0 {
@@ -95,6 +116,9 @@ func GetToFile(api_url, study_instance_uid string, inference_command string, tok
 	headers := map[string]string{"x-goog-meta-owner": token, "Content-Type": "multipart/related; type=application/dicom"}
 	dcm_path_slice, byte_slice, err := dicomweb.WadoToFile(url, headers, folder, timeout)
 	if err != nil {
+		if isFormattingError(err) {
+			return []string{}, ErrFormattingError
+		}
 		return []string{}, err
 	}
 	if len(byte_slice) > 0 {
@@ -144,6 +168,9 @@ func GetSignedUrl(api_url, study_instance_uid string, inference_command string, 
 	}
 	resp, err := dicomweb.Get(url, headers, timeout)
 	if err != nil {
+		if isFormattingError(err) {
+			return []*dicom.Dataset{}, ErrFormattingError
+		}
 		return []*dicom.Dataset{}, err
 	}
 	defer resp.Body.Close()
@@ -206,7 +233,10 @@ func GetSignedUrlToFile(api_url, study_instance_uid string, inference_command st
 	}
 	resp, err := dicomweb.Get(url, headers, timeout)
 	if err != nil {
-		return res, err
+		if isFormattingError(err) {
+			return []string{}, ErrFormattingError
+		}
+		return []string{}, err
 	}
 	defer resp.Body.Close()
 	get_response := GetStudyResponseV3{}

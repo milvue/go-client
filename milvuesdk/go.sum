@@ -14,10 +14,8 @@ github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+
 github.com/juju/gnuflag v0.0.0-20171113085948-2ce1bb71843d/go.mod h1:2PavIy+JPciBPrBUjwbNvtwB6RQlve+hkpll6QSNmOE=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/rronan/gonetdicom v0.0.0-20240515080221-a2b1f4f2f253 h1:XYTjkyutNy3n180UVC9/bJEDPCyUr3GvdOgaOjB/q4E=
-github.com/rronan/gonetdicom v0.0.0-20240515080221-a2b1f4f2f253/go.mod h1:l2rVWj5n48sbt+o5q8fXg75MOaPTpg7Epuz6lxePclY=
-github.com/rronan/gonetdicom v0.0.0-20240916154100-c8dae61615e0 h1:e+NlcWR2ATxwtm8DBJVjKy87dhec9bhVh3oFYVj+02o=
-github.com/rronan/gonetdicom v0.0.0-20240916154100-c8dae61615e0/go.mod h1:l2rVWj5n48sbt+o5q8fXg75MOaPTpg7Epuz6lxePclY=
+github.com/rronan/gonetdicom v0.0.0-20241209152535-31627a32a429 h1:SeTpWEyZgXs6QYjA9gGpnkoX7fdn8jNN82KhZmp/qoM=
+github.com/rronan/gonetdicom v0.0.0-20241209152535-31627a32a429/go.mod h1:l2rVWj5n48sbt+o5q8fXg75MOaPTpg7Epuz6lxePclY=
 github.com/spkg/bom v0.0.0-20160624110644-59b7046e48ad/go.mod h1:qLr4V1qq6nMqFKkMo8ZTx3f+BZEkzsRUY10Xsm2mwU0=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
