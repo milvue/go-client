@@ -40,17 +40,21 @@ func isFormattingError(err error) bool {
 func WaitDone(api_url, study_instance_uid string, token string, interval int, total_wait_time int, timeout int) (GetStudyStatusResponseV3, error) {
 	t1 := time.Now().Add(time.Duration(total_wait_time * 1e9))
 	var status_response GetStudyStatusResponseV3
-	for time.Now().Before(t1) {
+	for {
 		status_response, err := GetStatus(api_url, study_instance_uid, token, timeout)
 		if err != nil {
-			return GetStudyStatusResponseV3{}, err
+			return status_response, err
 		}
 		if status_response.Status == "error" {
 			return status_response, ErrPredictionError
-		} else if status_response.Status == "done" {
+		}
+		if status_response.Status == "done" {
 			return status_response, nil
 		}
 		time.Sleep(time.Duration(interval * 1e9))
+		if time.Now().After(t1) {
+			break
+		}
 	}
 	return status_response, ErrPredictionTimeout
 }
